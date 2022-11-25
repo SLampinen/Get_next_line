@@ -31,6 +31,22 @@ size_t	ft_linelen(char *s)
 	return (len);
 }
 
+char	*ft_strchr(const char *str, int c)
+{
+	char	*s;
+	char	nd;
+
+	nd = (char )c;
+	s = (char *)str;
+	while (*s != nd)
+	{
+		if (!*s)
+			return (0);
+		s++;
+	}
+	return (s);
+}
+
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*str;
@@ -55,4 +71,22 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	}
 	str[indd] = '\0';
 	return (str);
+}
+
+char	*ft_strdup(const char *src)
+{
+	char	*new;
+	int		i;
+
+	i = 0;
+	new = malloc(ft_strlen((char *)src) + 1);
+	if (!new)
+		return (NULL);
+	while (src[i])
+	{
+		new[i] = src[i];
+		i++;
+	}
+	new[i] = '\0';
+	return (new);
 }

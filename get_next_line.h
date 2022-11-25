@@ -10,8 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 4200
+# define BUFFER_SIZE 10
 #endif
 #include <stdlib.h>
 
 char	*get_next_line(int fd);
+size_t	ft_strlen(char *s);
+size_t	ft_linelen(char *s);
+char	*ft_strchr(const char *str, int c);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strdup(const char *src);

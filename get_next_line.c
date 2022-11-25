@@ -9,69 +9,84 @@
 /*   Updated: 2022/11/17 10:18:22 by slampine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include <unistd.h>
 #include "get_next_line.h"
-#include "get_next_line_utils.c"
+#include <unistd.h>
 
-/*char	*get_next_line(int fd)
+static char	*find_line(char *text)
 {
-	char		*current_line;
-	static char	*text;
-	char		*buffer;
-	static int	start;
-	int			i;
+	char	*line;
+	int		line_len;
 
-	i = 0;
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
-		return (NULL);
-	if (!text)
+	if (ft_strchr(text, '\n'))
 	{
-		text = malloc((BUFFER_SIZE + 1) * sizeof(char *));
-		start = 0;
+		line_len = ft_linelen(text);
+		line = malloc((line_len + 1) * sizeof(char *));
+		if (!line)
+			return (NULL);
+		line[line_len + 1] = 0;
+		while (line_len >= 0)
+		{
+		line[line_len] = text[line_len];
+		line_len--;
+		}
+		return (line);
 	}
-	if (!text)
+	else
 		return (NULL);
-	read(fd, text, BUFFER_SIZE);
-	while (read(fd, buffer, BUFFER_SIZE))
-		ft_strjoin(text, buffer);
-	free(buffer);
-	current_line = malloc((ft_linelen(text) + 1) * sizeof(char *));
-	while (text[start] != '\n' && text[start] != '\0')
-	{
-		current_line[i] = text[start];
-	}
-	
-	return (current_line);
-}*/
+}
 
-char	*get_next_line(int fd)
+char		*get_next_line(int fd)
 {
-	static int	fp;
 	static char	*storage;
 	char 		*buffer;
 	char		*current_line;
 	int			read_bytes;
+	int			num;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	num = 0;
+	if (BUFFER_SIZE <= 0 || read(fd, NULL, 0) < 0)
 		return (NULL);
-	if (!fp)
-		fp = BUFFER_SIZE;
-	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char *));
-	if (fp == BUFFER_SIZE)
+	if (!storage)
+		storage = ft_strdup("\0");
+	read_bytes = 5;
+	while(read_bytes > 0)
 	{
-		fp = 0;
-		while (read_bytes == read(fd, buffer, BUFFER_SIZE))
+		current_line = find_line(storage);
+		if (current_line != NULL)
 		{
-			current_line = malloc((read_bytes - fp + 1) * sizeof(char *));
-			while (buffer[fp] != '\n' && fp < read_bytes)
-			{
-				*current_line++ = buffer[fp++];
-			}
-			
+			while (storage[num] != '\n')
+				num++;
+			buffer = ft_strdup(storage + num + 1);
+			while (*storage)
+				*storage++ = 0;
+			if (*storage)
+				free(storage);
+			storage = ft_strdup(buffer);
+			while (*buffer)
+				*buffer++ = 0;
+			if (*buffer)
+				free(buffer);
+			return (current_line);
 		}
+		else
+		{
+			buffer = malloc((BUFFER_SIZE) * sizeof(char *));
+			read_bytes = read(fd, buffer, BUFFER_SIZE);
+			if (read_bytes > 0)
+				storage = ft_strjoin(storage, buffer);
+			while (*buffer)
+				*buffer++ = 0;
+			if (*buffer)
+				free(buffer);
+			current_line = ft_strdup(storage);
+		}
+	}
+	if (read_bytes <= 0)
+	{
+		while (*storage)
+			*storage++ = 0;
+		if (*storage)
+			free(storage);
 	}
 	return (current_line);
 }
