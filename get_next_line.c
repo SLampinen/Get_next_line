@@ -19,15 +19,15 @@ static char	*find_line(char *text)
 
 	if (ft_strchr(text, '\n'))
 	{
-		line_len = ft_linelen(text);
+		line_len = ft_len(text, '\n');
 		line = malloc((line_len + 1) * sizeof(char *));
 		if (!line)
 			return (NULL);
-		line[line_len + 1] = 0;
-		while (line_len >= 0)
+		line[line_len] = 0;
+		while (line_len > 0)
 		{
-		line[line_len] = text[line_len];
-		line_len--;
+			line_len--;
+			line[line_len] = text[line_len];
 		}
 		return (line);
 	}
@@ -35,37 +35,27 @@ static char	*find_line(char *text)
 		return (NULL);
 }
 
-char		*get_next_line(int fd)
+char	*get_next_line(int fd)
 {
 	static char	*storage;
-	char 		*buffer;
+	char		*buffer;
 	char		*current_line;
+	char		*temp;
 	int			read_bytes;
-	int			num;
 
-	num = 0;
 	if (BUFFER_SIZE <= 0 || read(fd, NULL, 0) < 0)
 		return (NULL);
+	read_bytes = 1;
 	if (!storage)
-		storage = ft_strdup("\0");
-	read_bytes = 5;
-	while(read_bytes > 0)
+		storage = ft_calloc((BUFFER_SIZE), sizeof(char *));
+	while (read_bytes > 0)
 	{
 		current_line = find_line(storage);
 		if (current_line != NULL)
 		{
-			while (storage[num] != '\n')
-				num++;
-			buffer = ft_strdup(storage + num + 1);
-			while (*storage)
-				*storage++ = 0;
-			if (*storage)
-				free(storage);
-			storage = ft_strdup(buffer);
-			while (*buffer)
-				*buffer++ = 0;
-			if (*buffer)
-				free(buffer);
+			temp = ft_substr(storage, ft_len(current_line, '\0'), ft_len(storage, '\0'));
+			free(storage);
+			storage = temp;
 			return (current_line);
 		}
 		else
@@ -73,20 +63,14 @@ char		*get_next_line(int fd)
 			buffer = malloc((BUFFER_SIZE) * sizeof(char *));
 			read_bytes = read(fd, buffer, BUFFER_SIZE);
 			if (read_bytes > 0)
-				storage = ft_strjoin(storage, buffer);
-			while (*buffer)
-				*buffer++ = 0;
-			if (*buffer)
-				free(buffer);
-			current_line = ft_strdup(storage);
+			{
+				temp = ft_strjoin(storage, buffer);
+				storage = temp;
+			}
+			free(buffer);
 		}
 	}
-	if (read_bytes <= 0)
-	{
-		while (*storage)
-			*storage++ = 0;
-		if (*storage)
-			free(storage);
-	}
+	current_line = ft_substr(storage, 0 , ft_len(storage, '\0'));
+	storage = NULL;
 	return (current_line);
 }

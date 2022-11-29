@@ -10,13 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 10
+# define BUFFER_SIZE 1000
 #endif
 #include <stdlib.h>
 
 char	*get_next_line(int fd);
-size_t	ft_strlen(char *s);
-size_t	ft_linelen(char *s);
+size_t  ft_len(char *s, char c);
 char	*ft_strchr(const char *str, int c);
 char	*ft_strjoin(char const *s1, char const *s2);
-char	*ft_strdup(const char *src);
+void	*ft_calloc(size_t count, size_t size);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
